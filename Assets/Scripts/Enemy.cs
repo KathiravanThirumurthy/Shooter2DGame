@@ -26,11 +26,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        //if enemy hits player
-        //damage player
-        // destroy us
+        
         if (other.tag == "Player")
         {
 
@@ -46,9 +44,7 @@ public class Enemy : MonoBehaviour
             }
             Destroy(this.gameObject);
         }
-        // if other is laser
-        // destroy laser
-        // Destroy us
+    
         if (other.tag == "Laser")
         {
             Destroy(other.gameObject);

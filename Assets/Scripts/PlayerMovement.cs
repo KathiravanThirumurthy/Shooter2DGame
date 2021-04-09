@@ -9,14 +9,26 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private GameObject _laser;
     [SerializeField]
+    private GameObject _tripleShotPrefab;
+    [SerializeField]
     private float fireRate = 0.2f;
     private float nextFire = 0.0f;
+    private Spawning _spawnManager;
+    [SerializeField]
+    private bool isTripleshotActive = false;
     
     private int _lives = 3;
     // Start is called before the first frame update
     void Start()
     {
         // to get the position
+        transform.position = new Vector3(0, 0, 0);
+       _spawnManager = GameObject.Find("SpawnManager").GetComponent<Spawning>();
+       
+        if(_spawnManager == null)
+        {
+            Debug.LogError("The SpwanManager is null");
+        }
        
     }
 
@@ -54,11 +66,31 @@ public class PlayerMovement : MonoBehaviour
     }
     private void shooting()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && Time.time > nextFire)
+        //isTripleshotActive
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > nextFire)
         {
             nextFire = Time.time + fireRate;
-            Instantiate(_laser,transform.position+new Vector3(0,0.5f,0),Quaternion.identity);
+            // fireLaser();
+            /* nextFire = Time.time + fireRate;
+             Instantiate(_laser,transform.position+new Vector3(0,1.5f,0),Quaternion.identity);*/
+            if (isTripleshotActive == true)
+            {
+                Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, 1.5f, 0), Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(_laser, transform.position + new Vector3(0, 1.5f, 0), Quaternion.identity);
+            }
         }
+       
+        // if space key pressed power up one laser 
+        // check for triple shot active power tripple shot or power sigle laser
+    }
+
+    private void fireLaser()
+    {
+        
+        
     }
 
     public void damagePlayer()
@@ -71,9 +103,22 @@ public class PlayerMovement : MonoBehaviour
         // destroy us
         if (_lives < 1)
         {
+            _spawnManager.onPlayerDeath();
             Destroy(this.gameObject);
         }
 
+    }
+
+    public void trippleShotActive()
+    {
+        isTripleshotActive = true;
+        StartCoroutine(powerDownRoutine());
+    }
+
+    IEnumerator powerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        isTripleshotActive = false;
     }
 
 
