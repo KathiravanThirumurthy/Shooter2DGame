@@ -7,9 +7,13 @@ public class PowerUp : MonoBehaviour
     [SerializeField]
     private float _speed=3.0f;
     // Start is called before the first frame update
+    [SerializeField]
+    private int powerUpId;
+    [SerializeField]
+    private AudioClip _audioClip;
     void Start()
     {
-        
+       
     }
 
     // Update is called once per frame
@@ -27,12 +31,35 @@ public class PowerUp : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag=="Player")
+       
+        if (other.tag=="Player")
         {
+           
             PlayerMovement player = other.GetComponent<PlayerMovement>();
+
+            AudioSource.PlayClipAtPoint(_audioClip, transform.position);
+           
             if(player !=null)
             {
-                player.trippleShotActive();
+                
+                switch (powerUpId)
+                    {
+                    case 0:
+                        player.trippleShotActive();
+                        break;
+                    case 1:
+                        player.speedPowerUpActive();
+                        
+                        break;
+                    case 2:
+                        player.shieldActive();
+                        break;
+                    default:
+                        Debug.Log("Default Value");
+                        break;
+                }
+
+
             }
             Destroy(this.gameObject);
         }

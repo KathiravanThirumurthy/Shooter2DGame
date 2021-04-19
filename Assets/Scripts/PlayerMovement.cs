@@ -11,25 +11,48 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     private GameObject _tripleShotPrefab;
     [SerializeField]
-    private float fireRate = 0.2f;
+    private float fireRate = 0.15f;
     private float nextFire = 0.0f;
     private Spawning _spawnManager;
     [SerializeField]
     private bool isTripleshotActive = false;
-    
+    [SerializeField]
+    private bool isSpeedPowerActive = false;
+    [SerializeField]
+    private bool _isShieldActive = false;
+    private int _speedMultiplier=4;
+    [SerializeField]
     private int _lives = 3;
+    [SerializeField]
+    private GameObject _shieldVisualizer;
+    [SerializeField]
+    private GameObject _rightEngine,_leftEngine;
+
+    
+    [SerializeField]
+    private AudioClip _laserSoundClip;
+    private AudioSource _audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
         // to get the position
         transform.position = new Vector3(0, 0, 0);
        _spawnManager = GameObject.Find("SpawnManager").GetComponent<Spawning>();
+        _audioSource =GetComponent<AudioSource>();
        
         if(_spawnManager == null)
         {
             Debug.LogError("The SpwanManager is null");
         }
-       
+       if(_audioSource == null)
+        {
+            Debug.LogError("The audio source on the palyer is null");
+        }
+        else
+        {
+            _audioSource.clip = _laserSoundClip;
+        }
     }
 
     // Update is called once per frame
@@ -66,45 +89,62 @@ public class PlayerMovement : MonoBehaviour
     }
     private void shooting()
     {
-        //isTripleshotActive
+       
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > nextFire)
         {
-            nextFire = Time.time + fireRate;
-            // fireLaser();
-            /* nextFire = Time.time + fireRate;
-             Instantiate(_laser,transform.position+new Vector3(0,1.5f,0),Quaternion.identity);*/
-            if (isTripleshotActive == true)
-            {
-                Instantiate(_tripleShotPrefab, transform.position + new Vector3(0, 1.5f, 0), Quaternion.identity);
-            }
-            else
-            {
-                Instantiate(_laser, transform.position + new Vector3(0, 1.5f, 0), Quaternion.identity);
-            }
+           fireLaser();
         }
        
-        // if space key pressed power up one laser 
-        // check for triple shot active power tripple shot or power sigle laser
     }
 
     private void fireLaser()
     {
-        
-        
+
+        nextFire = Time.time + fireRate;
+        if (isTripleshotActive == true)
+        {
+            Instantiate(_tripleShotPrefab, transform.position , Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(_laser, transform.position + new Vector3(0, 1.5f, 0), Quaternion.identity);
+        }
+        // play the laser audio Clip
+        _audioSource.Play();
+       // _audioSource.volume = 0.16f;
+
+
     }
 
     public void damagePlayer()
     {
-        Debug.Log("_lives before subtract: " + _lives);
-        _lives--;
-        Debug.Log("_lives after subtract: " + _lives);
+        
+        if(_isShieldActive ==true)
+        {
+            _isShieldActive = false;
+            //disable the shield visualiser
+            _shieldVisualizer.SetActive(false);
 
-        // check if dead
-        // destroy us
+            return;
+           
+        }
+
+        _lives--;
+        if(_lives == 2)
+        {
+            _leftEngine.SetActive(true);
+        }else if (_lives == 1)
+        {
+            _rightEngine.SetActive(true);
+        }
+        
+        // if lives is 2 enable rightengine
+        // if lives is 1 enable leftEngine
+
         if (_lives < 1)
         {
-            _spawnManager.onPlayerDeath();
-            Destroy(this.gameObject);
+             _spawnManager.onPlayerDeath();
+             Destroy(this.gameObject);
         }
 
     }
@@ -115,10 +155,44 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(powerDownRoutine());
     }
 
+   
+
     IEnumerator powerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);
         isTripleshotActive = false;
+    }
+
+    public void shieldActive()
+    
+    {
+        _isShieldActive = true;
+        //enable the visualiser
+        _shieldVisualizer.SetActive(true);
+        StartCoroutine(sheildPowerActive());
+       
+    }
+
+    IEnumerator sheildPowerActive()
+    {
+        yield return new WaitForSeconds(5.0f);
+        isSpeedPowerActive = false;
+        _shieldVisualizer.SetActive(false);
+    }
+
+    public void speedPowerUpActive()
+    {
+
+        isSpeedPowerActive = true;
+        _speed *= _speedMultiplier;
+        StartCoroutine(speedPowerUpActiveMethod());
+    }
+
+    IEnumerator speedPowerUpActiveMethod()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _speed /= _speedMultiplier;
+        isSpeedPowerActive = false;
     }
 
 

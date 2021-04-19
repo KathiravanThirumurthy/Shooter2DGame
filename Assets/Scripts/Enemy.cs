@@ -2,19 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 4.0f;
+    private Animator _anim;
+    private PlayerMovement _player;
+    private AudioSource _audioSource;
     // Start is called before the first frame update
     void Start()
     {
-        
+        _player = GameObject.Find("Player").GetComponent<PlayerMovement>();
+        _audioSource = GetComponent<AudioSource>();
+        if(_player == null)
+        {
+            Debug.LogError("Null Object");
+        }
+
+        _anim=GetComponent<Animator>();
+        if(_anim == null)
+        {
+            Debug.LogError("Animotr is null");
+        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
+       
         movingEnemy();
     }
     private void movingEnemy()
@@ -31,9 +48,6 @@ public class Enemy : MonoBehaviour
         
         if (other.tag == "Player")
         {
-
-
-
             // damage Player -lives system
             PlayerMovement player = other.transform.GetComponent<PlayerMovement>();
             if (player != null)
@@ -42,13 +56,18 @@ public class Enemy : MonoBehaviour
                 player.damagePlayer();
 
             }
-            Destroy(this.gameObject);
+            _anim.SetTrigger("onEnemyDeath");
+            _speed = 0;
+            Destroy(this.gameObject,2.8f);
         }
     
         if (other.tag == "Laser")
         {
             Destroy(other.gameObject);
-            Destroy(this.gameObject);
+            _anim.SetTrigger("onEnemyDeath");
+            _speed = 0;
+            _audioSource.Play();
+            Destroy(this.gameObject,2.8f);
 
         }
     }
