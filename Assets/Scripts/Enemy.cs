@@ -10,10 +10,12 @@ public class Enemy : MonoBehaviour
     private Animator _anim;
     private PlayerMovement _player;
     private AudioSource _audioSource;
+    
     // Start is called before the first frame update
     void Start()
     {
         _player = GameObject.Find("Player").GetComponent<PlayerMovement>();
+         
         _audioSource = GetComponent<AudioSource>();
         if(_player == null)
         {
@@ -67,6 +69,12 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("onEnemyDeath");
             _speed = 0;
             _audioSource.Play();
+            if(_player!=null)
+            {
+                _player.addScore(10);
+            }
+            // add 10 to score
+           
             Destroy(this.gameObject,2.8f);
 
         }

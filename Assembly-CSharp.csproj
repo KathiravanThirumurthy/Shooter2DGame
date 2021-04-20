@@ -72,6 +72,7 @@
     <Compile Include="Assets\Scripts\Scroll2d.cs" />
     <Compile Include="Assets\Scripts\Scrollscript.cs" />
     <Compile Include="Assets\Scripts\Spawning.cs" />
+    <Compile Include="Assets\Scripts\UI_Manager.cs" />
     <None Include="Assets\GameDevHQ\FileBase\Projects\Tutorials\Starter_Files\2D_Galaxy_Assets\Materials\Shaders\Galaxy.shader" />
     <None Include="Assets\GameDevHQ\FileBase\Plugin\README.txt" />
     <Reference Include="UnityEngine">

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField]
-    private float _speed = 6.0f;
+    private float _speed = 3.0f;
     [SerializeField]
     private GameObject _laser;
     [SerializeField]
@@ -20,14 +20,16 @@ public class PlayerMovement : MonoBehaviour
     private bool isSpeedPowerActive = false;
     [SerializeField]
     private bool _isShieldActive = false;
-    private int _speedMultiplier=4;
+    private int _speedMultiplier=2;
     [SerializeField]
     private int _lives = 3;
+    [SerializeField]
+    private int _score = 0;
     [SerializeField]
     private GameObject _shieldVisualizer;
     [SerializeField]
     private GameObject _rightEngine,_leftEngine;
-
+    private UI_Manager _uimanager;
     
     [SerializeField]
     private AudioClip _laserSoundClip;
@@ -39,13 +41,18 @@ public class PlayerMovement : MonoBehaviour
         // to get the position
         transform.position = new Vector3(0, 0, 0);
        _spawnManager = GameObject.Find("SpawnManager").GetComponent<Spawning>();
+        _uimanager = GameObject.Find("Canvas").GetComponent<UI_Manager>();
         _audioSource =GetComponent<AudioSource>();
        
         if(_spawnManager == null)
         {
             Debug.LogError("The SpwanManager is null");
         }
-       if(_audioSource == null)
+        if (_uimanager == null)
+        {
+            Debug.LogError("The UIMnager is null");
+        }
+        if (_audioSource == null)
         {
             Debug.LogError("The audio source on the palyer is null");
         }
@@ -53,6 +60,8 @@ public class PlayerMovement : MonoBehaviour
         {
             _audioSource.clip = _laserSoundClip;
         }
+
+       //if(_uimanager )
     }
 
     // Update is called once per frame
@@ -130,6 +139,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _lives--;
+        _uimanager.updateLives(_lives);
         if(_lives == 2)
         {
             _leftEngine.SetActive(true);
@@ -193,6 +203,14 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
         _speed /= _speedMultiplier;
         isSpeedPowerActive = false;
+    }
+
+    // method to add to score 
+    // communicate with UI to update score
+    public void addScore(int points)
+    {
+        _score += points;
+        _uimanager.updateScore(_score);
     }
 
 
